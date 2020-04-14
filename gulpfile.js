@@ -15,6 +15,8 @@ const cleanCSS = require("gulp-clean-css");
 
 const imagemin = require("gulp-imagemin");
 
+var del = require("del");
+
 const liveServer = require("live-server");
 
 /**
@@ -67,6 +69,17 @@ function buildHTML() {
     .pipe(gulp.dest("./dist"));
 }
 
+/**
+ *
+ * Copies icons
+ * from src/html into dist/
+ *
+ *
+ */
+
+function copyIcons() {
+  return gulp.src("./src/html/*.ico").pipe(gulp.dest("./dist"));
+}
 /**
  *
  * Moves vendor modules that do not require
@@ -183,6 +196,27 @@ gulp.task("default", function (cb) {
   gulp.watch("./src/js/(*.js|es5/*.js)", buildJS);
   gulp.watch("./src/html/**/*.(twig|html)", buildHTML);
   gulp.watch("./src/media/**/*", imageOptimize);
+  gulp.watch("./src/html/*.ico", copyIcons);
   liveReload();
+  cb();
+});
+
+/**
+ *
+ * Build everyting
+ *
+ * Wipes (!!!) dist/ folder
+ * and creates new bundles
+ *
+ */
+
+gulp.task("build", function (cb) {
+  del.sync("dist/**");
+  buildHTML();
+  buildCss();
+  buildJS();
+  copyVendorJS();
+  copyVendorCSS();
+  imageOptimize();
   cb();
 });
