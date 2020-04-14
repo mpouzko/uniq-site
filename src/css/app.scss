@@ -1,0 +1,9 @@
+@import "./modules/one";
+@import "./modules/two";
+body {
+  p {
+    display: block;
+    color: yellow;
+    font-size: 2px;
+  }
+}

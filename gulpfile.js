@@ -8,37 +8,56 @@ const include = require("gulp-include");
 const sourcemaps = require("gulp-sourcemaps");
 const uglify = require("gulp-uglify");
 
-const sassLint = require("gulp-sass-lint");
+const sass = require("gulp-sass");
+sass.compiler = require("node-sass");
+const autoprefixer = require("gulp-autoprefixer");
+const cleanCSS = require("gulp-clean-css");
 
-var liveServer = require("live-server");
+const imagemin = require("gulp-imagemin");
 
-const LIVE_PORT = 3000;
+const liveServer = require("live-server");
+
+/**
+ *
+ * Creates optimized CSS Bundles
+ *
+ * Put your bundle templates in src/css
+ * Put your source [s]css modules in src/css/modules
+ *
+ * Import sources into bundle using //=include or //=require
+ * or @import statement
+ * See src/css/app.scss for example
+ * Those templates will be minified, autoprefixed
+ * and transfered to dist/css with sourcemaps
+ *
+ */
 
 function buildCss() {
   return gulp
-    .src("./src/css/*.scss")
-
+    .src("./src/css/*.*ss")
+    .on("error", console.log)
+    .pipe(sourcemaps.init())
+    .pipe(sass().on("error", sass.logError))
+    .pipe(include())
     .pipe(
-      sassLint({
-        options: {
-          formatter: "stylish",
-          "merge-default-rules": false,
-        },
-
-        rules: {
-          "no-ids": 1,
-          "no-mergeable-selectors": 0,
-          indentaion: 0,
-        },
+      autoprefixer({
+        cascade: false,
       })
     )
-    .pipe(
-      sassLint.format({
-        formatter: "stylish",
-      })
-    )
-    .pipe(sassLint.failOnError());
+    .pipe(cleanCSS({ compatibility: "ie8" }))
+    .pipe(sourcemaps.write("."))
+    .pipe(gulp.dest("./dist/css"));
 }
+
+/**
+ *
+ * Compiles Twig HTML templates
+ *
+ * Put your pages templates in src/html
+ * Put your chunks into src/html/chunks
+ * Your templates will be processed and put into dist/
+ *
+ */
 
 function buildHTML() {
   return gulp
@@ -48,15 +67,55 @@ function buildHTML() {
     .pipe(gulp.dest("./dist"));
 }
 
+/**
+ *
+ * Moves vendor modules that do not require
+ * additional processing
+ *
+ * Copies everything (include subdirectories)
+ * from src/js/vendor into dist/js
+ *
+ */
+
 function copyVendorJS() {
-  return gulp.src("./src/js/vendor/*.js").pipe(gulp.dest("./dist/js/"));
+  return gulp.src("./src/js/vendor/**/*").pipe(gulp.dest("./dist/js/"));
 }
+
+/**
+ *
+ * Moves vendor packages that do not require
+ * additional processing
+ *
+ * Copies everything (include subdirectories)
+ * from src/css/vendor into dist/css
+ *
+ */
+
+function copyVendorCSS() {
+  return gulp.src("./src/css/vendor/**.*").pipe(gulp.dest("./dist/css/"));
+}
+
+/**
+ *
+ * Creates optimized JS Bundles
+ *
+ * Put your bundle templates in src/js
+ * Put your source ES5/ES6 scripts into src/js/modules
+ *
+ * Import sources into bundle using //=include or //=require statement
+ * See src/app.js for example
+ *
+ * Those bundles will be minified, mangled
+ * and transfered to dist/js with sourcemaps
+ *
+ */
 
 function buildJS() {
   return gulp
     .src("./src/js/*.js")
-    .pipe(include())
     .pipe(sourcemaps.init())
+    .pipe(include())
+
     .pipe(
       babel({
         presets: ["@babel/env"],
@@ -72,32 +131,58 @@ function buildJS() {
     .pipe(gulp.dest("./dist/js/"));
 }
 
-function liveReload() {
-  var params = {
-    port: LIVE_PORT, // Set the server port. Defaults to 8080.
-    host: "0.0.0.0", // Set the address to bind to. Defaults to 0.0.0.0 or process.env.IP.
-    root: "./dist", // Set root directory that's being served. Defaults to cwd.
-    open: true, // When false, it won't load your browser by default.
-    ignore: "scss,my/templates", // comma-separated string for paths to ignore
-    file: "index.html", // When set, serve this file (server root relative) for every 404 (useful for single-page applications)
-    wait: 1000, // Waits for all changes, before reloading. Defaults to 0 sec.
-    mount: [["/components", "./node_modules"]], // Mount a directory to a route.
-    logLevel: 2, // 0 = errors only, 1 = some, 2 = lots
-    middleware: [
-      function (req, res, next) {
-        next();
-      },
-    ], // Takes an array of Connect-compatible middleware that are injected into the server middleware stack
-  };
-  liveServer.start(params);
+/**
+ *
+ * Image optimizer
+ *
+ * Optimizes your images
+ * That are in src/media
+ * And copies into dist/media
+ *
+ */
+function imageOptimize() {
+  return gulp
+    .src("./src/media/**/*")
+    .pipe(imagemin([imagemin.mozjpeg(), imagemin.optipng(), imagemin.svgo()]))
+    .pipe(gulp.dest("dist/media/"));
 }
 
-gulp.task("build", function (cb) {
-  liveReload();
-  gulp.watch("./src/css/*.s[ac?]ss", buildCss);
-  gulp.watch("./src/js/vendor/*.js", copyVendorJS);
+/**
+ *
+ * Live reload server
+ * Starts automaticaly
+ *
+ */
+
+function liveReload() {
+  var config = {
+    port: 3000, // Port to listen
+    host: "0.0.0.0", // Bind address
+    root: "./dist", // Dir to serve
+    open: true, // Open in browser on start
+    file: "index.html", // Page for 404
+    wait: 1000, // Delay before reload
+    logLevel: 2, // Show most of errors
+  };
+
+  liveServer.start(config);
+}
+
+/**
+ *
+ * Gulp default task to watch everyting in src/
+ * and publish it into dist/
+ *
+ */
+
+gulp.task("default", function (cb) {
+  gulp.watch("./src/css/**/*.(c|sa|sc)ss", buildCss);
+  gulp.watch("./src/js/vendor/**/*", copyVendorJS);
+  gulp.watch("./src/css/vendor/**/*", copyVendorCSS);
   gulp.watch("./src/js/modules/*.js", buildJS);
   gulp.watch("./src/js/(*.js|es5/*.js)", buildJS);
   gulp.watch("./src/html/**/*.(twig|html)", buildHTML);
+  gulp.watch("./src/media/**/*", imageOptimize);
+  liveReload();
   cb();
 });
