@@ -2,6 +2,7 @@ const gulp = require("gulp");
 
 const twig = require("gulp-twig");
 const htmlmin = require("gulp-htmlmin");
+const prettify = require("gulp-html-prettify");
 
 const babel = require("gulp-babel");
 const include = require("gulp-include");
@@ -18,6 +19,8 @@ const imagemin = require("gulp-imagemin");
 var del = require("del");
 
 const liveServer = require("live-server");
+
+const config = require("./gulp.config");
 
 /**
  *
@@ -62,11 +65,17 @@ function buildCss() {
  */
 
 function buildHTML() {
-  return gulp
-    .src("./src/html/*.twig")
-    .pipe(twig())
-    .pipe(htmlmin({ collapseWhitespace: true }))
-    .pipe(gulp.dest("./dist"));
+  const stream = gulp.src("./src/html/*.twig").pipe(twig());
+
+  if (config.minifyHTML) {
+    stream.pipe(htmlmin({ collapseWhitespace: true }));
+  } else {
+    stream.pipe(prettify({ indent_char: " ", indent_size: 2 }));
+  }
+
+  stream.pipe(gulp.dest("./dist"));
+
+  return stream;
 }
 
 /**
