@@ -32,13 +32,12 @@
     "gulp-watch": "^5.0.1",
     "live-server": "^1.2.1",
     "node-sass": "^4.13.1",
-    "tiny-lr": "^1.1.1"
-  },
-  "devDependencies": {
+    "tiny-lr": "^1.1.1",
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
     "child_process": "^1.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-sass-lint": "^1.4.0"
-  }
+  },
+  "devDependencies": {}
 }
