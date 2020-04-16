@@ -1,4 +1,5 @@
 const gulp = require("gulp");
+const gulpif = require("gulp-if");
 
 const twig = require("gulp-twig");
 const htmlmin = require("gulp-htmlmin");
@@ -41,7 +42,7 @@ function buildCss() {
   return gulp
     .src("./src/css/*.*ss")
     .on("error", console.log)
-    .pipe(sourcemaps.init())
+    .pipe(gulpif(config.css.sourcemaps, sourcemaps.init()))
     .pipe(sass().on("error", sass.logError))
     .pipe(include())
     .pipe(
@@ -49,8 +50,8 @@ function buildCss() {
         cascade: false,
       })
     )
-    .pipe(cleanCSS({ compatibility: "ie8" }))
-    .pipe(sourcemaps.write("."))
+    .pipe(gulpif(config.css.minify, cleanCSS({ compatibility: "ie8" })))
+    .pipe(gulpif(config.css.sourcemaps, sourcemaps.write(".")))
     .pipe(gulp.dest("./dist/css"));
 }
 
@@ -65,17 +66,17 @@ function buildCss() {
  */
 
 function buildHTML() {
-  const stream = gulp.src("./src/html/*.twig").pipe(twig());
-
-  if (config.minifyHTML) {
-    stream.pipe(htmlmin({ collapseWhitespace: true }));
-  } else {
-    stream.pipe(prettify({ indent_char: " ", indent_size: 2 }));
-  }
-
-  stream.pipe(gulp.dest("./dist"));
-
-  return stream;
+  return gulp
+    .src("./src/html/*.twig")
+    .pipe(twig())
+    .pipe(
+      gulpif(
+        config.html.minify,
+        htmlmin({ collapseWhitespace: true }),
+        prettify({ indent_char: " ", indent_size: 2 })
+      )
+    )
+    .pipe(gulp.dest("./dist"));
 }
 
 /**
@@ -135,7 +136,8 @@ function copyVendorCSS() {
 function buildJS() {
   return gulp
     .src("./src/js/*.js")
-    .pipe(sourcemaps.init())
+
+    .pipe(gulpif(config.js.sourcemaps, sourcemaps.init()))
     .pipe(include())
 
     .pipe(
@@ -145,11 +147,14 @@ function buildJS() {
     )
     .on("error", console.error)
     .pipe(
-      uglify({
-        mangle: true,
-      })
+      gulpif(
+        config.js.minify,
+        uglify({
+          mangle: true,
+        })
+      )
     )
-    .pipe(sourcemaps.write("."))
+    .pipe(gulpif(config.js.sourcemaps, sourcemaps.write(".")))
     .pipe(gulp.dest("./dist/js/"));
 }
 
@@ -177,17 +182,7 @@ function imageOptimize() {
  */
 
 function liveReload() {
-  var config = {
-    port: 3000, // Port to listen
-    host: "0.0.0.0", // Bind address
-    root: "./dist", // Dir to serve
-    open: true, // Open in browser on start
-    file: "index.html", // Page for 404
-    wait: 1000, // Delay before reload
-    logLevel: 2, // Show most of errors
-  };
-
-  liveServer.start(config);
+  liveServer.start(config.server);
 }
 
 /**
