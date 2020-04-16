@@ -1,5 +1,6 @@
 const gulp = require("gulp");
 const gulpif = require("gulp-if");
+const hash = require("gulp-hash");
 
 const twig = require("gulp-twig");
 const htmlmin = require("gulp-htmlmin");
@@ -38,7 +39,7 @@ const config = require("./gulp.config");
  *
  */
 
-function buildCss() {
+function buildCSS() {
   return gulp
     .src("./src/css/*.*ss")
     .on("error", console.log)
@@ -51,8 +52,20 @@ function buildCss() {
       })
     )
     .pipe(gulpif(config.css.minify, cleanCSS({ compatibility: "ie8" })))
+    .pipe(gulpif(config.css.hash_names, hash()))
     .pipe(gulpif(config.css.sourcemaps, sourcemaps.write(".")))
-    .pipe(gulp.dest("./dist/css"));
+    .pipe(gulp.dest("./dist/css"))
+    .pipe(
+      gulpif(
+        config.css.hash_names,
+        hash.manifest("./src/manifest.css.json", {
+          // Generate the manifest file
+          deleteOld: true,
+          sourceDir: "./dist/css/",
+        })
+      )
+    )
+    .pipe(gulpif(config.css.hash_names, gulp.dest(".")));
 }
 
 /**
@@ -66,9 +79,14 @@ function buildCss() {
  */
 
 function buildHTML() {
+  const manifest = createManifest();
   return gulp
     .src("./src/html/*.twig")
-    .pipe(twig())
+    .pipe(
+      twig({
+        data: { ...manifest },
+      })
+    )
     .pipe(
       gulpif(
         config.html.minify,
@@ -136,10 +154,8 @@ function copyVendorCSS() {
 function buildJS() {
   return gulp
     .src("./src/js/*.js")
-
     .pipe(gulpif(config.js.sourcemaps, sourcemaps.init()))
     .pipe(include())
-
     .pipe(
       babel({
         presets: ["@babel/env"],
@@ -154,8 +170,20 @@ function buildJS() {
         })
       )
     )
+    .pipe(gulpif(config.js.hash_names, hash()))
     .pipe(gulpif(config.js.sourcemaps, sourcemaps.write(".")))
-    .pipe(gulp.dest("./dist/js/"));
+    .pipe(gulp.dest("./dist/js/"))
+    .pipe(
+      gulpif(
+        config.js.hash_names,
+        hash.manifest("./src/manifest.js.json", {
+          // Generate the manifest file
+          deleteOld: true,
+          sourceDir: "./dist/js/",
+        })
+      )
+    )
+    .pipe(gulpif(config.js.hash_names, gulp.dest(".")));
 }
 
 /**
@@ -193,12 +221,13 @@ function liveReload() {
  */
 
 gulp.task("default", function (cb) {
-  gulp.watch("./src/css/**/*.(c|sa|sc)ss", buildCss);
+  gulp.watch("./src/css/**/*.(c|sa|sc)ss", buildCSS);
   gulp.watch("./src/js/vendor/**/*", copyVendorJS);
   gulp.watch("./src/css/vendor/**/*", copyVendorCSS);
   gulp.watch("./src/js/modules/*.js", buildJS);
   gulp.watch("./src/js/(*.js|es5/*.js)", buildJS);
   gulp.watch("./src/html/**/*.(twig|html)", buildHTML);
+  gulp.watch("./src/*.json", buildHTML);
   gulp.watch("./src/media/**/*", imageOptimize);
   gulp.watch("./src/html/*.ico", copyIcons);
   liveReload();
@@ -216,11 +245,41 @@ gulp.task("default", function (cb) {
 
 gulp.task("build", function (cb) {
   del.sync("dist/**");
-  buildHTML();
-  buildCss();
-  buildJS();
-  copyVendorJS();
-  copyVendorCSS();
-  imageOptimize();
+  gulp.series(
+    buildCSS,
+    buildJS,
+    buildHTML,
+    copyVendorJS,
+    copyVendorCSS,
+    imageOptimize,
+    copyIcons
+  )();
   cb();
 });
+
+/**
+ *
+ * Helper function to create hashed bundles manifest
+ * for HTML templating
+ *
+ */
+
+function createManifest() {
+  const result = {};
+  if (config.css.hash_names) {
+    result.css = {};
+    const srccss = require("./src/manifest.css.json");
+    for (let asset in srccss) {
+      result.css[asset] = "/css/" + srccss[asset];
+    }
+  }
+  if (config.js.hash_names) {
+    result.js = {};
+    const srcjs = require("./src/manifest.js.json");
+    for (let asset in srcjs) {
+      result.js[asset] = "/js/" + srcjs[asset];
+    }
+  }
+
+  return result;
+}
