@@ -1,9 +1,4 @@
-@import "./modules/one";
-@import "./modules/two";
-body {
-  p {
-    display: block;
-    color: yellow;
-    font-size: 2px;
-  }
-}
+@import "./vars";
+@import "./modules/normalize";
+@import "./modules/fonts";
+@import "./modules/header";

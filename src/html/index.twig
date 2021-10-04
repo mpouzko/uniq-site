@@ -1,7 +1,20 @@
 {% set data = 
     {
-        title: 'Index page',
-        menu: ['home','about','contacts']
+        title: 'UniqtripSoft',
+        menu: { 
+            'проекты ':null,
+            'блог':null,
+            'о компании':null,
+            'контакты':null,
+            'support':null,
+            'наши услуги' : [
+                'Битрикс 24',
+                'Разработка',
+                'Бизнес-аналитика',
+                'Туристический сегмент',
+                'Сопровождение 1С'
+            ]
+        }
     }   
 %}  
 <!DOCTYPE html>
@@ -12,6 +25,7 @@
             <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ data.title }}</title>
     <link rel="stylesheet" href="{{ css['app.css'] }}" />
+    <link rel="stylesheet" href="{{ css['inline.css'] }}" />
 </head>
 <body>
 {% include './chunks/header.twig' with { menu:data.menu } %}

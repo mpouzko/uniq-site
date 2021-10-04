@@ -1,3 +1,4 @@
+const fs = require("fs");
 const gulp = require("gulp");
 const gulpif = require("gulp-if");
 const hash = require("gulp-hash");
@@ -11,7 +12,7 @@ const include = require("gulp-include");
 const sourcemaps = require("gulp-sourcemaps");
 const uglify = require("gulp-uglify");
 
-const sass = require("gulp-sass");
+const sass = require("gulp-sass")(require("node-sass"));
 sass.compiler = require("node-sass");
 const autoprefixer = require("gulp-autoprefixer");
 const cleanCSS = require("gulp-clean-css");
@@ -268,14 +269,14 @@ function createManifest() {
   const result = {};
   if (config.css.hash_names) {
     result.css = {};
-    const srccss = require("./src/manifest.css.json");
+    const srccss = JSON.parse(fs.readFileSync("./src/manifest.css.json"));
     for (let asset in srccss) {
       result.css[asset] = "/css/" + srccss[asset];
     }
   }
   if (config.js.hash_names) {
     result.js = {};
-    const srcjs = require("./src/manifest.js.json");
+    const srcjs = JSON.parse(fs.readFileSync("./src/manifest.js.json"));
     for (let asset in srcjs) {
       result.js[asset] = "/js/" + srcjs[asset];
     }

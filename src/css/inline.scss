@@ -1,0 +1,9 @@
+@import "./vars";
+
+body * {
+  font-family: "Roboto", "Arial", sans-serif;
+}
+
+.container {
+  max-width: $max-width;
+}

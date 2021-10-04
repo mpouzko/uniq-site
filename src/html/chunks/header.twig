@@ -1,8 +1,28 @@
-<header>
-    <nav>
+<header class="header">
+    <div class="header__logo">
+        <a href="/" class="header__link--home">
+            UT<span>Soft</span>
+        </a>
+    </div>
+    <nav class="header__menu">
+
         <ul>
-{% for menuItem in menu %}
-            <li>{{ menuItem }}</li>
+{% for menuItem,children in menu %}
+            <li class="header__menu-item">
+                <a class="header__menu-link" href="http://mail.ru">{{ menuItem }}</a>         
+                
+                
+            </li>
+            {% if children %}
+                    <ul class="header__submenu">
+                        {% for subitem in children %}
+                        <li class="header__menu-item">
+                            <a class="header__menu-link"  href="http://yandfex.ru"> {{ subitem }}</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+            {% endif %}
 {% endfor %}
         </ul>
     </nav>

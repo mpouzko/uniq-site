@@ -16,7 +16,7 @@ module.exports = {
     port: 3000, // Port to listen
     host: "0.0.0.0", // Bind address
     root: "./dist", // Dir to serve
-    open: true, // Open in browser on start
+    open: "true", // Open in browser on start
     file: "index.html", // Page for 404
     wait: 1000, // Delay before reload
     logLevel: 2, // Show most of errors
