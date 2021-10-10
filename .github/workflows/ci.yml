@@ -1,0 +1,16 @@
+name: Node CI
+
+on: push
+
+jobs:
+  buildAndTest:
+    runs-on: node-latest
+
+    steps:
+      - name: Install, build, test
+        run: |
+          mkdir dist
+          npm install
+          npm run build
+        env:
+          CI: true
