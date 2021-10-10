@@ -7,14 +7,17 @@
             'о компании':null,
             'контакты':null,
             'support':null,
-            'наши услуги' : [
+            
+        },
+        services: [
                 'Битрикс 24',
                 'Разработка',
                 'Бизнес-аналитика',
                 'Туристический сегмент',
                 'Сопровождение 1С'
             ]
-        }
+        
+
     }   
 %}  
 <!DOCTYPE html>
@@ -28,8 +31,20 @@
     <link rel="stylesheet" href="{{ css['inline.css'] }}" />
 </head>
 <body>
-{% include './chunks/header.twig' with { menu:data.menu } %}
-                 <div class="container"></div>
+<div class="container">
+{% include './chunks/header.twig' with { menu:data.menu, services: data.services } %}
+</div>
+<div class="container">
+{% include './chunks/hero.twig'  %}
+{% include './chunks/slider.twig'  %}
+{% include './chunks/hero-dark.twig'  %}
+<section class="section">
+<div class="col__container">
+{% include './chunks/left-col.twig'  %}
+{% include './chunks/right-col.twig'  %}
+</div>
+    </section>
+</div>
 {% include './chunks/footer.twig'  %}
 <script         src="{{ js['app.js']}}"></script>
 </body>

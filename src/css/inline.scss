@@ -6,4 +6,62 @@ body * {
 
 .container {
   max-width: $max-width;
+  margin: 0 auto;
+  position: relative;
+}
+
+.section {
+  margin-top: 6rem;
+  margin-bottom: 6rem;
+}
+
+@media (min-width: $mobile) and (max-width: $max-width) {
+  .container {
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+}
+
+@media (max-width: $max-width) {
+  body {
+    padding-top: 64px;
+  }
+  .section {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+}
+
+@media (min-width: $max-width) {
+  .mobile-only {
+    display: none;
+  }
+}
+@media (min-width: $mobile) {
+  .col__container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .col {
+    display: inline-block;
+    width: calc(50% - 2.5rem);
+    &:nth-of-type(1) {
+      margin-right: 2rem;
+    }
+    &:nth-of-type(2) {
+      margin-left: 2rem;
+    }
+  }
+}
+
+@media (max-width: $mobile) {
+  .col {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
 }

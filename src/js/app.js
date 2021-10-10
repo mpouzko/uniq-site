@@ -1,5 +1,4 @@
 window.addEventListener("DOMContentLoaded", function () {});
-//=require ./modules/first-mod.js
-//=include ./modules/second-mod.js
 
-firstmod();
+//=include './modules/news.js'
+//=include './modules/first-mod.js'

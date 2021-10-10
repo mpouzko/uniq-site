@@ -1,0 +1,104 @@
+@import "../vars";
+
+.footer {
+  color: #212121;
+  display: flex;
+  padding: 2.5rem 0 5rem;
+  background-color: #f5f5f6;
+  justify-content: flex-start;
+  &__block {
+    background-color: #f5f5f6;
+  }
+  &__col {
+    padding-right: 6rem;
+    &:first-of-type {
+      padding-right: 14rem;
+    }
+  }
+
+  &__col &__link {
+    font-size: 1rem;
+    color: #2c3136;
+    display: block;
+    margin-bottom: 0.8rem;
+    &:first-of-type {
+      font-size: 1.1rem;
+      color: #2c3136;
+      margin-bottom: 1.2rem;
+      font-weight: bold;
+    }
+  }
+  &__logo {
+    font-weight: 600;
+    font-size: 36px;
+    color: inherit;
+    display: block;
+    margin-bottom: 2rem;
+  }
+  &__contact {
+    font-weight: normal;
+    font-size: 1.2rem;
+    display: block;
+    margin: 1.25rem 0;
+    color: #787878;
+    i {
+      display: inline-block;
+      font-size: 1rem;
+      margin-right: 2rem;
+    }
+  }
+}
+
+@media (max-width: $max-width) {
+  .footer {
+    flex-direction: column;
+    align-items: center;
+    &__col {
+      padding-right: 0rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      &:first-of-type {
+        padding-right: 0rem;
+        padding-bottom: 2rem;
+      }
+      ul {
+        text-align: center;
+      }
+    }
+    &__contact {
+      margin: 0.5rem 0;
+      i {
+        margin-right: 1rem;
+      }
+    }
+
+    &__link {
+      display: block;
+      margin: 1rem auto;
+    }
+  }
+}
+
+@media (min-width: $mobile) and (max-width: $max-width) {
+  .footer {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    &__col {
+      align-items: flex-start;
+      ul {
+        text-align: left;
+      }
+    }
+    &__col &__link {
+      font-size: 0.8rem;
+    }
+    &__logo {
+      font-size: 1.75rem;
+    }
+    &__contact {
+      font-size: 1rem;
+    }
+  }
+}

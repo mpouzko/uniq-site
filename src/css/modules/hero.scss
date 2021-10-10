@@ -1,0 +1,70 @@
+@import "../vars";
+
+.hero {
+  background-color: #e2e2e2;
+  background-size: cover;
+  width: 100%;
+  height: 40vw;
+  max-height: $max-width * 0.4;
+  box-sizing: border-box;
+  padding-left: 10%;
+  &__container {
+    color: #fff;
+    flex-direction: column;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 50%;
+  }
+  &__title {
+    color: #2c3136;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    font-weight: 600;
+    font-size: 2rem;
+    margin-bottom: 1.1rem;
+    margin-top: 0;
+    &--inverse {
+      color: #ffffff;
+    }
+  }
+  &__text {
+    color: #2c3136;
+    margin-top: 0;
+    line-height: 1.8rem;
+    font-size: 1.3rem;
+    &--inverse {
+      color: #ffffff;
+    }
+  }
+  &__button {
+    background-color: #484848;
+    font-size: 1.1rem;
+    color: #ffffff;
+    display: block;
+    padding: 1rem 2.5rem;
+    transition: box-shadow 0.3s;
+    &:hover {
+      box-shadow: -5px -5px 5px rgba(0, 0, 0, 0.9) inset;
+    }
+    &--inverse {
+      background-color: #ffffff;
+      color: #2c3136 !important;
+      &:hover {
+        box-shadow: -5px -5px 5px rgba(0, 0, 0, 0.25) inset;
+      }
+    }
+  }
+}
+@media (max-width: $tablet) {
+  .hero {
+    padding-top: 10vw;
+    padding-bottom: 10vw;
+    height: auto;
+    max-height: auto;
+    &__container {
+      max-width: 90%;
+    }
+  }
+}

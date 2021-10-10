@@ -1,5 +1,24 @@
-<header class="header">
-    <div class="header__logo">
+<div class="header--mobile">
+  <div class="header__logo">
+        <a href="/" class="header__link--home">
+            UT<span>Soft</span>
+        </a>
+    </div>
+     <div>
+            <div class="header__menu-toggle" onclick="toggleMobileMenu(this)">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+    </div>
+</div>
+
+<header class="header j-mobilemenu ">
+<div class="header__row">
+    <div class="header__logo desktop-only">
         <a href="/" class="header__link--home">
             UT<span>Soft</span>
         </a>
@@ -10,20 +29,49 @@
 {% for menuItem,children in menu %}
             <li class="header__menu-item">
                 <a class="header__menu-link" href="http://mail.ru">{{ menuItem }}</a>         
-                
-                
             </li>
-            {% if children %}
-                    <ul class="header__submenu">
-                        {% for subitem in children %}
-                        <li class="header__menu-item">
-                            <a class="header__menu-link"  href="http://yandfex.ru"> {{ subitem }}</a>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    
-            {% endif %}
 {% endfor %}
         </ul>
     </nav>
+    <div class="header__features">
+        <div class="header__services-menu">
+            <input type="checkbox" id="showServices" />
+            <label for="showServices" onclick="toggleSubMenu(this)">Наши услуги</label>
+        </div>
+        <div class="header__search desktop-only">
+            <input placeholder="Поиск" type="text" name="search" autocomplete="off"/>
+            <span onclick="clearSearch(this)">✕</span>
+            <i class="icon-search"></i>
+        </div>
+       
+    </div>
+</div>
+<div class="header__row">
+<nav class="header__submenu j-submenu">
+                <ul>
+                
+{% for menuItem in services %}
+            <li class="header__menu-item">
+                <a class="header__menu-link" href="http://mail.ru">{{ menuItem }}</a>         
+                
+                
+            </li>
+{% endfor %}
+        </ul>
+    </nav> 
+</div>
+<div class="header__row mobile-only">
+    <div class="header__search">
+            <input placeholder="Поиск" type="text" name="search" autocomplete="off"/>
+            <span onclick="clearSearch(this)">✕</span>
+            <i class="icon-search"></i>
+    </div>
+
+<div class="header__menu-item header__menu-contact">
+    <a href="tel:+78622777042"> <i class="icon-phone"></i>+7 (862) 277 70 42</a>
+</div>
+<div class="header__menu-item header__menu-contact">
+    <a  href="mailto:info@uniqtrip.ru"> <i class="icon-envelop"></i>info@unqitrip.ru</a>
+</div>
+</div>
 </header>
